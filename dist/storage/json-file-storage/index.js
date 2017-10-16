@@ -39,6 +39,10 @@ const select = (table, where) => {
   return result;
 };
 
+const truncate = table => {
+  overrideTable(table, []);
+};
+
 const whereFilter = (arr, filter) => {
   const filterKeys = Object.keys(filter);
   return arr.filter(item => filterKeys.every(key => filter[key] == item[key]));
@@ -85,6 +89,7 @@ const table = exports.table = table => {
     find: where => find(table, where),
     select: (where = null) => select(table, where),
     update: (updates, where) => update(table, updates, where),
+    truncate: () => truncate(table),
     create: obj => create(table, obj)
   };
 };

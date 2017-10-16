@@ -279,27 +279,30 @@ function socket(path, func) {
   socketHandlers.push([path, func]);
 }
 
-const start = exports.start = () => {
+const start = exports.start = (withSocket = false) => {
   const server = _config2.default.https !== 'true' ? require('http').createServer(app) : require('https').createServer(serverConfig, app);
-  const io = require('socket.io')(server);
 
-  io.on('connection', socket => {
-    socket.on('disconnect', () => {
-      if (onSocketDisconnectFunction) {
-        onSocketDisconnectFunction(socket);
+  if (withSocket) {
+    const io = require('socket.io')(server);
+
+    io.on('connection', socket => {
+      socket.on('disconnect', () => {
+        if (onSocketDisconnectFunction) {
+          onSocketDisconnectFunction(socket);
+        }
+      });
+
+      for (let i = 0; i < socketHandlers.length; i++) {
+        socket.on(socketHandlers[i][0], msg => {
+          socketHandlers[i][1](msg, socket);
+        });
+      }
+
+      if (onSocketConnectionFunction) {
+        onSocketConnectionFunction(socket);
       }
     });
-
-    for (let i = 0; i < socketHandlers.length; i++) {
-      socket.on(socketHandlers[i][0], msg => {
-        socketHandlers[i][1](msg, socket);
-      });
-    }
-
-    if (onSocketConnectionFunction) {
-      onSocketConnectionFunction(socket);
-    }
-  });
+  }
 
   server.listen(_config2.default.port);
   console.log(`Listen on: ${_config2.default.port}`);
