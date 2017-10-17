@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-const bcrypt = require('bcrypt-node');
+const bcrypt = require('bcryptjs');
 
 const takeFirst = exports.takeFirst = arr => arr.length > 0 ? arr[0] : [];
 

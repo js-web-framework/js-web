@@ -1,4 +1,4 @@
-const bcrypt = require('bcrypt-node')
+const bcrypt = require('bcryptjs')
 
 export const takeFirst = arr =>
   (arr.length > 0 ? arr[0] : [])

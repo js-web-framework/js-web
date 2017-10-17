@@ -1,6 +1,6 @@
 {
   "name": "js-web",
-  "version": "2.8.0",
+  "version": "2.8.1",
   "description": "",
   "main": "./dist/index.js",
   "scripts": {
@@ -17,7 +17,7 @@
   "license": "MIT",
   "dependencies": {
     "axios": "^0.16.2",
-    "bcrypt-node": "^0.1.0",
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.17.2",
     "cookie-parser": "^1.4.3",
     "dotenv": "^4.0.0",
