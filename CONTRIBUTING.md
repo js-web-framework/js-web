@@ -10,12 +10,12 @@ If you are a developer and want to contribute please check our [documentation](h
 
 JS-Web uses GitHub’s integrated issue tracking system to record bugs and feature requests. If you want to raise an issue, please follow the recommendations below:
 
-- Before you submit an issue, please search the [issue tracker](https://github.com/simonsmadsen/js-web/issues) to see if someone has already reported the problem.
+- Before you submit an issue, please search the [issue tracker](https://github.com/js-web-framework/js-web/issues) to see if someone has already reported the problem.
 - If the issue doesn’t already exist, create a new issue.
 - Please provide as much information as possible with the issue report, we like to know the version of JS-Web that you are using, as well as your Operating System and Node version.
 - If possible try to create a test-case or project that replicates the issue.
 
-Some of them are easier than others. The [easy](https://github.com/simonsmadsen/js-web/labels/easy)
+Some of them are easier than others. The [easy](https://github.com/js-web-framework/js-web/labels/easy)
 label can be used to find the easy issues.
 
 

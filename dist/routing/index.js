@@ -260,13 +260,22 @@ const fileExists = filename => {
 const routeErr = route => console.log('Error in route: ' + route);
 
 const htmlRoute = exports.htmlRoute = (route, filename, data, injections) => {
+  const renderOnRequest = _config2.default.render_on_request || 'true';
+  let templateWithOutData = '';
+
   if (!fileExists(filename)) return routeErr(route);
-  const templateWithOutData = (0, _template2.default)(filename);
+
+  if (renderOnRequest === 'true') {
+    templateWithOutData = (0, _template2.default)(filename);
+  }
 
   if (injections) {
     inject.pack(unpackArr(injections), `${assetsFolder}/${bundleScript}`, `${assetsFolder}/${bundleCSS}`);
   }
   app.get(route, (req, res) => {
+    if (renderOnRequest !== 'true') {
+      templateWithOutData = (0, _template2.default)(filename);
+    }
     const flashed = flashedData(req);
     respond(out => {
       res.send(handleInjections(unpackArr(injections), templateWithOutData(Object.assign(out, flashed))));
