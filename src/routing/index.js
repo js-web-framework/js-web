@@ -249,12 +249,12 @@ const routeErr = route =>
   console.log('Error in route: '+route)
 
 export const htmlRoute = (route, filename, data, injections) => {
-  const renderOnRequest = config.render_on_request || 'true'
+  const renderOnRequest = config.render_on_request || 'false'
   let templateWithOutData = ''
 
   if (!fileExists(filename)) return routeErr(route)
 
-  if (renderOnRequest === 'true') {
+  if (renderOnRequest !== 'true') {
     templateWithOutData = template(filename)
   }
 
@@ -265,7 +265,7 @@ export const htmlRoute = (route, filename, data, injections) => {
     )
   }
   app.get(route, (req, res) => {
-    if (renderOnRequest !== 'true') {
+    if (renderOnRequest === 'true') {
       templateWithOutData = template(filename)
     }
     const flashed = flashedData(req)
