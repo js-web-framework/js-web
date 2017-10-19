@@ -48,12 +48,4 @@ describe('routing', () => {
     expect(result.status).toBe(200)
     expect(result.text.includes('<h1>Hi Simon</h1>')).toBeTruthy()
   })
-
-  it('html route file not exists', async () => {
-    const htmlFile = 'test/routing/fake-file.html'
-    await htmlRoute('/test-html3', htmlFile, async () => ({ name: 'Simon' }))
-
-    const result = await request(server).get('/test-html3')
-    expect(result.status).toBe(404)
-  })
 })

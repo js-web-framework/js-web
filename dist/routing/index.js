@@ -24,6 +24,8 @@ var _config = require('./../config');
 
 var _config2 = _interopRequireDefault(_config);
 
+var _responseHandler = require('./response-handler');
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj; } else { var newObj = {}; if (obj != null) { for (var key in obj) { if (Object.prototype.hasOwnProperty.call(obj, key)) newObj[key] = obj[key]; } } newObj.default = obj; return newObj; } }
@@ -70,101 +72,18 @@ const serverConfig = _config2.default.https !== 'true' ? {} : {
   ca: fs.readFileSync(_config2.default.https_fullchain)
 };
 
-const sendError = res => e => {
-  res.sendStatus(500);
-  console.log(['err in route', res.req.url, e]);
-};
-
-const setCookie = (key, val, days, res) => {
-  const options = {
-    maxAge: 1000 * 60 * 60 * 24 * days,
-    httpOnly: true,
-    signed: true
-  };
-  res.cookie(key, val, options);
-};
-
-const getUserImputs = req => {
-  let params = Object.assign({}, req.body, req.params);
-  params = Object.assign({}, params, req.query);
-  params.take = allowedKeys => {
-    const newObj = {};
-    Object.keys(params).forEach(key => {
-      if (allowedKeys.indexOf(key) > -1) {
-        newObj[key] = params[key];
-      }
-    });
-    return newObj;
-  };
-  params.only = params.take;
-  return params;
-};
-
-const runFunc = (respondFunc, output, res, req) => respond(respondFunc, output(getUserImputs(req), {
-  get: (key, std) => req.session[key] ? req.session[key] : std,
-  set: (key, val) => {
-    req.session[key] = val;
-  },
-  getFlash: (key, std) => req.session[`_FLASH_${key}`] ? req.session[`_FLASH_${key}`] : std,
-  setFlash: (key, val) => {
-    req.session[`_FLASH_${key}`] = val;
-  }
-}, {
-  get: (key, std) => req.signedCookies[key] ? req.signedCookies[key] : std,
-  set: (key, val, days = 1) => setCookie(key, val, days, res)
-}), res, req);
-
-const respond = (respondFunc, output, res, req) => {
-  if (!output) {
-    console.log('! No return in route !');
-    output = {};
-  }
-  switch (output.constructor.name) {
-    case 'AsyncFunction':
-      runFunc(respondFunc, output, res, req);
-      break;
-    case 'Function':
-      runFunc(respondFunc, output, res, req);
-      break;
-    case 'Promise':
-      output.then(r => respond(respondFunc, r, res, req)).catch(sendError(res));
-      break;
-    case 'Redirect':
-      if (output.headers) {
-        res.set(output.headers);
-      }
-      res.redirect(output.route);
-      break;
-    case 'Back':
-      res.redirect(backUrl(req));
-      break;
-    default:
-      respondFunc(clearFlashedData(req, output));
-  }
-};
-
-const flashedKeys = req => Object.keys(req.session).filter(k => k.indexOf('_FLASH_') > -1);
-
 const flashedData = req => {
-  const flashKeys = flashedKeys(req);
+  const flashKeys = (0, _responseHandler.flashedKeys)(req);
   const data = {};
   flashKeys.forEach(k => {
     data[k.replace('_FLASH_', '')] = req.session[k];
   });
   return data;
 };
-const clearFlashedData = (req, d) => {
-  if (req.session) {
-    const flashKeys = flashedKeys(req);
-    flashKeys.forEach(k => delete req.session[k]);
-  }
-  return d;
-};
-const backUrl = req => req.header('Referer') || '/';
 
 function route(route, func) {
   app.get(route, (req, res) => {
-    respond(r => res.json(r), func, res, req);
+    (0, _responseHandler.handleRespond)(r => res.json(r), func, res, req);
   });
 }
 
@@ -192,7 +111,7 @@ function redirect(route) {
 
 function postRoute(route, func) {
   app.post(route, (req, res) => {
-    respond(r => res.json(r), func, res, req);
+    (0, _responseHandler.handleRespond)(r => res.json(r), func, res, req);
   });
 }
 const isScriptInjected = html => html.indexOf(bundleScript) > -1;
@@ -230,7 +149,7 @@ const unpackArr = exports.unpackArr = (arr = []) => arr.reduce((packed, current)
 const notFoundRedirect = data => {
   app.get('*', (req, res) => {
     const flashed = flashedData(req);
-    respond(null, data, res, req);
+    (0, _responseHandler.handleRespond)(null, data, res, req);
   });
 };
 
@@ -245,7 +164,7 @@ const notFound = exports.notFound = (filename, data, injections) => {
   }
   app.get('*', (req, res) => {
     const flashed = flashedData(req);
-    respond(out => {
+    (0, _responseHandler.handleRespond)(out => {
       res.status(404).send(handleInjections(unpackArr(injections), templateWithOutData(Object.assign(out, flashed))));
     }, data, res, req);
   });
@@ -260,12 +179,12 @@ const fileExists = filename => {
 const routeErr = route => console.log('Error in route: ' + route);
 
 const htmlRoute = exports.htmlRoute = (route, filename, data, injections) => {
-  const renderOnRequest = _config2.default.render_on_request || 'true';
+  const renderOnRequest = _config2.default.render_on_request || 'false';
   let templateWithOutData = '';
 
   if (!fileExists(filename)) return routeErr(route);
 
-  if (renderOnRequest === 'true') {
+  if (renderOnRequest !== 'true') {
     templateWithOutData = (0, _template2.default)(filename);
   }
 
@@ -273,11 +192,11 @@ const htmlRoute = exports.htmlRoute = (route, filename, data, injections) => {
     inject.pack(unpackArr(injections), `${assetsFolder}/${bundleScript}`, `${assetsFolder}/${bundleCSS}`);
   }
   app.get(route, (req, res) => {
-    if (renderOnRequest !== 'true') {
+    if (renderOnRequest === 'true') {
       templateWithOutData = (0, _template2.default)(filename);
     }
     const flashed = flashedData(req);
-    respond(out => {
+    (0, _responseHandler.handleRespond)(out => {
       res.send(handleInjections(unpackArr(injections), templateWithOutData(Object.assign(out, flashed))));
     }, data, res, req);
   });
