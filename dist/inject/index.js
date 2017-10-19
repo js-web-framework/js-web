@@ -29,16 +29,10 @@ exports.jquery = jquery;
 exports.socketIO = socketIO;
 exports.bootstrap = bootstrap;
 exports.style = style;
-exports.facebookAuth = facebookAuth;
 exports.googleAnalytics = googleAnalytics;
-exports.googleAuth = googleAuth;
 exports.script = script;
 
 var pack = _interopRequireWildcard(_jsPack);
-
-var _jsSocial = require('js-social');
-
-var socal = _interopRequireWildcard(_jsSocial);
 
 var _cdns = require('./cdns');
 
@@ -54,7 +48,7 @@ function _interopRequireWildcard(obj) { if (obj && obj.__esModule) { return obj;
 
 const fs = require('fs');
 
-const isURL = str => new RegExp("((http|https)(:\/\/))?([a-zA-Z0-9]+[.]{1}){2}[a-zA-z0-9]+(\/{1}[a-zA-Z0-9]+)*\/?", 'i').test(str);
+const isURL = str => new RegExp('((http|https)(:\/\/))?([a-zA-Z0-9]+[.]{1}){2}[a-zA-z0-9]+(\/{1}[a-zA-Z0-9]+)*\/?', 'i').test(str);
 
 function jquery() {
   return pack.scriptCDN(cdns.jquery);
@@ -86,10 +80,6 @@ function style(str) {
   return pack.cssFile(str);
 }
 
-function facebookAuth(okCallback, bindClass, scope) {
-  return pack.scriptRAW(socal.facebookAuthScript(_config2.default.facebook_app_id, okCallback, bindClass, scope));
-}
-
 function googleAnalytics() {
   return pack.scriptRAW(`
     (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
@@ -98,10 +88,6 @@ function googleAnalytics() {
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
     ga('create', '${_config2.default.google_analytics}', 'auto');
     ga('send', 'pageview');`);
-}
-
-function googleAuth(okCallback, bindClass, scope) {
-  return pack.scriptRAW(socal.googleAuthScript(_config2.default.google_client_id, _config2.default.google_api_key, okCallback, bindClass, scope));
 }
 
 function script(str) {
