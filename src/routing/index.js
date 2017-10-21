@@ -39,12 +39,14 @@ if (config.allowCrossDomain === 'true') {
   app.use(allowCrossDomain)
 }
 
-const serverConfig = config.https !== 'true' ? {} :
-  {
-    key: fs.readFileSync(config.https_privkey),
-    cert: fs.readFileSync(config.https_cert),
-    ca: fs.readFileSync(config.https_fullchain)
-  }
+const serverConfig =
+  config.https !== 'true'
+    ? {}
+    : {
+      key: fs.readFileSync(config.https_privkey),
+      cert: fs.readFileSync(config.https_cert),
+      ca: fs.readFileSync(config.https_fullchain)
+    }
 
 const flashedData = (req) => {
   const flashKeys = flashedKeys(req)
@@ -61,9 +63,7 @@ export function route(route, func) {
   })
 }
 
-function Back() {
-
-}
+function Back() {}
 export function back() {
   return new Back()
 }
@@ -137,32 +137,28 @@ export const notFound = (filename, data, injections) => {
   const templateWithOutData = template(filename)
 
   if (injections) {
-    inject.pack(unpackArr(injections),
-      `${assetsFolder}/${bundleScript}`,
-      `${assetsFolder}/${bundleCSS}`
-    )
+    inject.pack(unpackArr(injections), `${assetsFolder}/${bundleScript}`, `${assetsFolder}/${bundleCSS}`)
   }
   app.get('*', (req, res) => {
     const flashed = flashedData(req)
-    respond((out) => {
-      res.status(404).send(
-        handleInjections(
-          unpackArr(injections),
-          templateWithOutData(Object.assign(out, flashed))
-        )
-      )
-    }, data, res, req)
+    respond(
+      (out) => {
+        res.status(404).send(handleInjections(unpackArr(injections), templateWithOutData(Object.assign(out, flashed))))
+      },
+      data,
+      res,
+      req
+    )
   })
 }
 
-const fileExists = filename => {
+const fileExists = (filename) => {
   if (fs.existsSync(filename)) return true
   console.log(`${filename} - file not exists!`)
   return false
 }
 
-const routeErr = route =>
-  console.log('Error in route: '+route)
+const routeErr = route => console.log(`Error in route: ${route}`)
 
 export const htmlRoute = (route, filename, data, injections) => {
   const renderOnRequest = config.render_on_request || 'false'
@@ -175,24 +171,21 @@ export const htmlRoute = (route, filename, data, injections) => {
   }
 
   if (injections) {
-    inject.pack(unpackArr(injections),
-      `${assetsFolder}/${bundleScript}`,
-      `${assetsFolder}/${bundleCSS}`
-    )
+    inject.pack(unpackArr(injections), `${assetsFolder}/${bundleScript}`, `${assetsFolder}/${bundleCSS}`)
   }
   app.get(route, (req, res) => {
     if (renderOnRequest === 'true') {
       templateWithOutData = template(filename)
     }
     const flashed = flashedData(req)
-    respond((out) => {
-      res.send(
-        handleInjections(
-          unpackArr(injections),
-          templateWithOutData(Object.assign(out, flashed))
-        )
-      )
-    }, data, res, req)
+    respond(
+      (out) => {
+        res.send(handleInjections(unpackArr(injections), templateWithOutData(Object.assign(out, flashed))))
+      },
+      data,
+      res,
+      req
+    )
   })
 }
 
@@ -201,10 +194,9 @@ export function socket(path, func) {
   socketHandlers.push([path, func])
 }
 
-
 export const start = (withSocket = false) => {
-  const server = config.https !== 'true' ? require('http').createServer(app) :
-  require('https').createServer(serverConfig, app)
+  const server =
+    config.https !== 'true' ? require('http').createServer(app) : require('https').createServer(serverConfig, app)
 
   if (withSocket) {
     const io = require('socket.io')(server)

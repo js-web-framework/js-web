@@ -38,19 +38,29 @@ const getUserImputs = (req) => {
   return params
 }
 
-const runFunc = (respondFunc, output, res, req) => handleRespond(respondFunc, output(
-  getUserImputs(req),
-  {
-    get: (key, std) => (req.session[key] ? req.session[key] : std),
-    set: (key, val) => { req.session[key] = val },
-    getFlash: (key, std) => (req.session[`_FLASH_${key}`] ? req.session[`_FLASH_${key}`] : std),
-    setFlash: (key, val) => { req.session[`_FLASH_${key}`] = val }
-  },
-  {
-    get: (key, std) => (req.signedCookies[key] ? req.signedCookies[key] : std),
-    set: (key, val, days = 1) => setCookie(key, val, days, res)
-  }
-), res, req)
+const runFunc = (respondFunc, output, res, req) =>
+  handleRespond(
+    respondFunc,
+    output(
+      getUserImputs(req),
+      {
+        get: (key, std) => (req.session[key] ? req.session[key] : std),
+        set: (key, val) => {
+          req.session[key] = val
+        },
+        getFlash: (key, std) => (req.session[`_FLASH_${key}`] ? req.session[`_FLASH_${key}`] : std),
+        setFlash: (key, val) => {
+          req.session[`_FLASH_${key}`] = val
+        }
+      },
+      {
+        get: (key, std) => (req.signedCookies[key] ? req.signedCookies[key] : std),
+        set: (key, val, days = 1) => setCookie(key, val, days, res)
+      }
+    ),
+    res,
+    req
+  )
 
 export const handleRespond = (respondFunc, output, res, req) => {
   if (!output) {
@@ -65,9 +75,7 @@ export const handleRespond = (respondFunc, output, res, req) => {
     runFunc(respondFunc, output, res, req)
     break
   case 'Promise':
-    output
-      .then(r => handleRespond(respondFunc, r, res, req))
-      .catch(sendError(res))
+    output.then(r => handleRespond(respondFunc, r, res, req)).catch(sendError(res))
     break
   case 'Redirect':
     if (output.headers) {

@@ -6,7 +6,8 @@ export * from './react'
 export { pack } from 'js-pack'
 const fs = require('fs')
 
-const isURL = str => new RegExp('((http|https)(:\/\/))?([a-zA-Z0-9]+[.]{1}){2}[a-zA-z0-9]+(\/{1}[a-zA-Z0-9]+)*\/?', 'i').test(str)
+const isURL = str =>
+  new RegExp('((http|https)(://))?([a-zA-Z0-9]+[.]{1}){2}[a-zA-z0-9]+(/{1}[a-zA-Z0-9]+)*/?', 'i').test(str)
 
 export function jquery() {
   return pack.scriptCDN(cdns.jquery)
@@ -17,10 +18,7 @@ export function socketIO() {
 }
 
 export function bootstrap() {
-  return [
-    pack.scriptCDN(cdns.bootstrapJS),
-    pack.cssCDN(cdns.bootstrapCSS)
-  ]
+  return [pack.scriptCDN(cdns.bootstrapJS), pack.cssCDN(cdns.bootstrapCSS)]
 }
 
 export function style(str) {
@@ -31,7 +29,8 @@ export function style(str) {
     console.log(`${str} - file not exists!`)
     return pack.cssRAW('')
   }
-  if (str.indexOf('.sass') > -1 || str.indexOf('.scss') > -1) { // .sass||.scss
+  if (str.indexOf('.sass') > -1 || str.indexOf('.scss') > -1) {
+    // .sass||.scss
     return pack.sass(str)
   }
   if (str.indexOf('.styl') > -1) {

@@ -25,10 +25,7 @@ const overrideTable = (table, arr) => {
   return arr
 }
 
-const create = (table, obj) => overrideTable(
-table,
-  ensureTable(table).concat([obj])
-)
+const create = (table, obj) => overrideTable(table, ensureTable(table).concat([obj]))
 const select = (table, where) => {
   const result = ensureTable(table)
   if (where) {
@@ -43,8 +40,7 @@ const truncate = (table) => {
 
 const whereFilter = (arr, filter) => {
   const filterKeys = Object.keys(filter)
-  return arr.filter(item =>
-    filterKeys.every(key => filter[key] == item[key]))
+  return arr.filter(item => filterKeys.every(key => filter[key] == item[key]))
 }
 
 const _delete = (table, where) => {

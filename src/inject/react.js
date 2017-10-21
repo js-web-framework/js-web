@@ -4,7 +4,8 @@ const path = require('path')
 const fs = require('fs')
 
 const noExt = file => file.replace(path.extname(file), '')
-const link = (file, linkId) => `import App from '.${noExt(file)}' ` +
+const link = (file, linkId) =>
+  `import App from '.${noExt(file)}' ` +
   '\n ReactDOM.render( ' +
   '  React.createElement(App), ' +
   `  document.getElementById('${linkId}')` +
@@ -18,7 +19,7 @@ export function react(index, linkId, dev = false) {
   const filePath = path.dirname(index)
   const linkedFile = `${filePath}/js-web-linked.js`
   fs.writeFileSync(linkedFile, link(index.replace(filePath, ''), linkId))
-  if(dev){
+  if (dev) {
     return [
       pack.scriptCDN('https://unpkg.com/react@15/dist/react.js'),
       pack.scriptCDN('https://unpkg.com/react-dom@15/dist/react-dom.js'),
@@ -40,6 +41,12 @@ export function babel(index) {
   const filePath = path.dirname(index)
 
   return [
-    pack.babel(filePath, index.replace(filePath, '').replace('/', '').replace('\\', ''))
+    pack.babel(
+      filePath,
+      index
+        .replace(filePath, '')
+        .replace('/', '')
+        .replace('\\', '')
+    )
   ]
 }
