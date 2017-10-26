@@ -73,12 +73,20 @@ function Redirect(route, headers) {
   this.headers = headers
 }
 
+function Download(file) {
+  this.file = file
+}
+
 export function onSocketDisconnect(func) {
   onSocketDisconnectFunction = func
 }
 
 export function onSocketConnection(func) {
   onSocketConnectionFunction = func
+}
+
+export function download(file) {
+  return new Download(file)
 }
 
 export function redirect(route) {

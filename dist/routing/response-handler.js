@@ -78,6 +78,9 @@ const handleRespond = exports.handleRespond = (respondFunc, output, res, req) =>
       }
       res.redirect(output.route);
       break;
+    case 'Download':
+      res.download(output.file);
+      break;
     case 'Back':
       res.redirect(backUrl(req));
       break;

@@ -8,6 +8,7 @@ exports.route = route;
 exports.back = back;
 exports.onSocketDisconnect = onSocketDisconnect;
 exports.onSocketConnection = onSocketConnection;
+exports.download = download;
 exports.redirect = redirect;
 exports.postRoute = postRoute;
 exports.socket = socket;
@@ -97,12 +98,20 @@ function Redirect(route, headers) {
   this.headers = headers;
 }
 
+function Download(file) {
+  this.file = file;
+}
+
 function onSocketDisconnect(func) {
   onSocketDisconnectFunction = func;
 }
 
 function onSocketConnection(func) {
   onSocketConnectionFunction = func;
+}
+
+function download(file) {
+  return new Download(file);
 }
 
 function redirect(route) {
