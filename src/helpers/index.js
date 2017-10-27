@@ -1,10 +1,7 @@
 const bcrypt = require('bcryptjs')
 
-export const takeFirst = arr =>
-  (arr.length > 0 ? arr[0] : [])
+export const takeFirst = arr => (arr.length > 0 ? arr[0] : [])
 
-export const hash = password =>
-  bcrypt.hashSync(password, bcrypt.genSaltSync(5))
+export const hash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(5))
 
-export const compareHash = (password, hash) =>
-  bcrypt.compareSync(password, hash)
+export const compareHash = (password, hash) => bcrypt.compareSync(password, hash)

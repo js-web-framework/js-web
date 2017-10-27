@@ -7,7 +7,8 @@
     "test": "./node_modules/.bin/jest",
     "start": "node bin/dev",
     "clean": "rm -rf dist",
-    "build": "npm run clean && mkdir dist && babel src -d dist"
+    "build": "npm run clean && mkdir dist && babel src -d dist",
+    "format": "./node_modules/.bin/prettier-eslint --config ./.prettierrc --write \"src/**/*.js\""
   },
   "author": "Simon Madsen",
   "repository": {
@@ -47,6 +48,7 @@
     "eslint-config-airbnb-base": "^12.0.1",
     "eslint-plugin-import": "^2.7.0",
     "jest": "^21.2.0",
+    "prettier-eslint-cli": "^4.4.0",
     "regenerator-runtime": "^0.11.0",
     "supertest": "^3.0.0"
   }
