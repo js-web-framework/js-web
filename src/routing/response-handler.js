@@ -1,4 +1,9 @@
+import config from './../config'
+
+const jwt = require('jsonwebtoken')
+
 const backUrl = req => req.header('Referer') || '/'
+
 export const flashedKeys = req => Object.keys(req.session).filter(k => k.indexOf('_FLASH_') > -1)
 const clearFlashedData = (req, d) => {
   if (req.session) {
@@ -38,19 +43,35 @@ const getUserImputs = (req) => {
   return params
 }
 
-const runFunc = (respondFunc, output, res, req) => handleRespond(respondFunc, output(
-  getUserImputs(req),
-  {
+const runFunc = (respondFunc, output, res, req) => handleRespond(respondFunc, output({
+  jwtSign: (payload = { id: 1 }) =>
+    jwt.sign(payload, config.app_key),
+  jwtVerify: async () => new Promise((resolve, reject) => {
+    const token = req.headers['x-access-token']
+    if (!token) {
+      reject('no token')
+    }
+    jwt.verify(token, config.app_key, (err, decoded) => {
+      if (err) {
+        reject('wrong token')
+      }
+      resolve(decoded)
+    })
+  }),
+  input: getUserImputs(req),
+  session: {
     get: (key, std) => (req.session[key] ? req.session[key] : std),
     set: (key, val) => { req.session[key] = val },
     getFlash: (key, std) => (req.session[`_FLASH_${key}`] ? req.session[`_FLASH_${key}`] : std),
     setFlash: (key, val) => { req.session[`_FLASH_${key}`] = val }
   },
-  {
+  cookie: {
     get: (key, std) => (req.signedCookies[key] ? req.signedCookies[key] : std),
     set: (key, val, days = 1) => setCookie(key, val, days, res)
-  }
-), res, req)
+  },
+  res,
+  req
+}), res, req)
 
 export const handleRespond = (respondFunc, output, res, req) => {
   if (!output) {

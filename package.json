@@ -28,6 +28,7 @@
     "js-auth": "0.0.8",
     "js-mysql": "^1.4.5",
     "js-pack": "^1.2.1",
+    "jsonwebtoken": "^8.1.1",
     "moment": "^2.18.1",
     "nodemailer": "^4.0.1",
     "socket.io": "^2.0.3"

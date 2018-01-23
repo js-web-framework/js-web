@@ -185,7 +185,7 @@ const fileExists = filename => {
   return false;
 };
 
-const routeErr = route => console.log('Error in route: ' + route);
+const routeErr = route => console.log(`Error in route: ${route}`);
 
 const htmlRoute = exports.htmlRoute = (route, filename, data, injections) => {
   const renderOnRequest = _config2.default.render_on_request || 'false';

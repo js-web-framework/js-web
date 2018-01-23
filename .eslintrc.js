@@ -6,7 +6,7 @@ module.exports = {
         "jest": true
     },
     "globals": {
-      "_": true
+        "_": true
     },
     "extends": "airbnb-base",
     "parserOptions": {
@@ -21,13 +21,10 @@ module.exports = {
         ],
         "no-console": 0,
         "comma-dangle": [
-          "error", "never"
+            "error", "never"
         ],
         "no-param-reassign": 0,
-        "linebreak-style": [
-            "error",
-            "unix"
-        ],
+        "linebreak-style": 0,
         "quotes": [
             "error",
             "single"

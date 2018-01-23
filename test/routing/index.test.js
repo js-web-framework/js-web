@@ -1,6 +1,7 @@
 import request from 'supertest'
 
 import { route, htmlRoute, postRoute, app } from './../../src/routing'
+import { WSASYSNOTREADY } from 'constants'
 
 describe('routing', () => {
   let server
@@ -12,6 +13,45 @@ describe('routing', () => {
   afterEach((done) => {
     server.close()
     done()
+  })
+
+  it('gives you a jwt token', async () => {
+    const jsonResponse = { simon: 'my name2' }
+    await postRoute('/test-post-jwt-sign', ({ jwtSign }) => ({ token: jwtSign() }))
+    await postRoute('/test-post-jwt-verify', async ({ jwtVerify }) => {
+      try {
+        await jwtVerify()
+        return { verified: true }
+      } catch (error) {
+        return { verified: false }
+      }
+    })
+
+    const token = (await request(server).post('/test-post-jwt-sign').send()).body
+    const result = await request(server)
+      .post('/test-post-jwt-verify')
+      .set({ 'x-access-token': token.token })
+      .send()
+    expect(result.status).toBe(200)
+    expect(result.body).toEqual({ verified: true })
+  })
+
+  it('gives you a jwt token and fails', async () => {
+    const jsonResponse = { simon: 'my name2' }
+    await postRoute('/test-post-jwt-verify', async ({ jwtVerify }) => {
+      try {
+        await jwtVerify()
+        return { verified: true }
+      } catch (error) {
+        return { verified: false }
+      }
+    })
+    const result = await request(server)
+      .post('/test-post-jwt-verify')
+      .set({ 'x-access-token': 'kldfklfdklfdlkdfldfkl' })
+      .send()
+    expect(result.status).toBe(200)
+    expect(result.body).toEqual({ verified: false })
   })
 
   it('get route (route)', async () => {
